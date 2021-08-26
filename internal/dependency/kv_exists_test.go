@@ -25,10 +25,10 @@ func TestKVExistsQuery_SetOptions(t *testing.T) {
 	}
 	q.SetOptions(QueryOptions{WaitIndex: 100, WaitTime: 100})
 	if q.opts.WaitIndex != 0 {
-		t.Fatal("WaitIndex should be zero")
+		t.Fatal("WaitIndex should be 100")
 	}
 	if q.opts.WaitTime != 0 {
-		t.Fatal("WaitTime should be zero")
+		t.Fatal("WaitTime should be 100")
 	}
 }
 
