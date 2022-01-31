@@ -7,6 +7,8 @@ import (
 	"net/http/httptest"
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestClientSet(t *testing.T) {
@@ -15,12 +17,20 @@ func TestClientSet(t *testing.T) {
 			func(w http.ResponseWriter, r *http.Request) {
 				fmt.Fprint(w, `"test"`)
 			}))
-		ts.Listener, _ = net.Listen("tcp", "127.0.0.1:8500")
+
+		listener, err := net.Listen("tcp", "127.0.0.1:0")
+		require.NoError(t, err)
+		port := listener.Addr().(*net.TCPAddr).Port
+		err = listener.Close()
+		require.NoError(t, err)
+		ts.Listener, err = net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port))
+		require.NoError(t, err)
+
 		ts.Start()
 		defer ts.Close()
 		// ^ fake consul
 		cs := NewClientSet()
-		err := cs.AddConsul(ConsulInput{})
+		err = cs.AddConsul(ConsulInput{})
 		if err != nil {
 			t.Fatal(err)
 		}
